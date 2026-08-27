@@ -1,0 +1,1150 @@
+{% extends "base.html" %}
+
+{% block title %}Target Identification{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <!-- =========================================
+         PAGE TITLE
+         ========================================= -->
+
+    <h1>Target Identification</h1>
+
+    <p>
+        Paste a list of differentially expressed genes (one per line) to identify and prioritize therapeutic targets.
+    </p>
+
+
+    <!-- =========================================
+         GENE LIST + SUBMIT + SERVICES
+         ========================================= -->
+
+    <form method="POST" action="{{ url_for('main.targets') }}">
+
+        <div class="form-group">
+
+            <label for="gene_list">
+                Gene List
+            </label>
+
+            <textarea
+                class="form-control"
+                id="gene_list"
+                name="gene_list"
+                rows="6"
+                placeholder="TP53&#10;BRCA1&#10;EGFR"
+                required></textarea>
+
+        </div>
+
+
+        <!-- Submit Request + Professional Services -->
+
+        <div class="submit-services-row">
+
+            <!-- Submit Request -->
+
+            <div class="submit-section">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    Submit Request
+
+                </button>
+
+            </div>
+
+
+            <!-- Professional Bioinformatics Services -->
+
+            <div class="professional-services">
+
+                <h3>
+                    Professional Bioinformatics Services
+                </h3>
+
+                <p>
+                    For customized bioinformatics analysis,
+                    drug discovery projects,
+                    or scientific collaborations,
+                    please contact me.
+                </p>
+
+
+                <div class="contact-icons">
+
+                    <!-- Email -->
+
+                    <a href="mailto:roya.keshvari87@gmail.com">
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                        <span>Email</span>
+
+                    </a>
+
+
+                    <!-- GitHub -->
+
+                    <a
+                        href="https://github.com/gitlab-max"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        <i class="fa-brands fa-github"></i>
+
+                        <span>GitHub</span>
+
+                    </a>
+
+
+                    <!-- LinkedIn -->
+
+                    <a
+                        href="https://www.linkedin.com/in/roya.keshvari-medicaldata-scientist"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        <i class="fa-brands fa-linkedin"></i>
+
+                        <span>LinkedIn</span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
+    <!-- =========================================
+         WORKFLOW GUIDE
+         ========================================= -->
+
+    <div class="workflow-area">
+
+        <hr>
+
+        <button
+            type="button"
+            onclick="toggleGuide()"
+            class="btn btn-secondary">
+
+            📖 Target Identification Pipeline
+
+        </button>
+
+
+        <div
+            id="guide"
+            class="guide">
+
+            <h2>
+                Target Identification Workflow
+            </h2>
+
+            <ol>
+
+                <li>
+                    Upload a list of candidate genes (from differential expression or literature).
+                </li>
+
+                <li>
+                    Map to protein-protein interaction (PPI) networks.
+                </li>
+
+                <li>
+                    Identify hubs and key modules using network centrality.
+                </li>
+
+                <li>
+                    Integrate pathway enrichment and functional annotation.
+                </li>
+
+                <li>
+                    Rank candidates by drugability and disease relevance.
+                </li>
+
+                <li>
+                    Deliver a prioritized list of potential therapeutic targets (CSV + plots).
+                </li>
+
+            </ol>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         TARGET IDENTIFICATION REQUESTS
+         ========================================= -->
+
+    <div class="requests-section">
+
+        <div class="requests-header">
+
+            <h2>
+                Target Identification Requests
+            </h2>
+
+            <p>
+                Submitted target identification requests
+            </p>
+
+        </div>
+
+
+        <div class="requests-card">
+
+            <div class="table-wrapper">
+
+                <table class="requests-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Date</th>
+
+                            <th>Gene List</th>
+
+                            <th>Status</th>
+
+                            <th>Result</th>
+
+                            {% if is_admin %}
+
+                            <th>Active</th>
+
+                            <th>Actions</th>
+
+                            {% endif %}
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for req in requests %}
+
+                        <tr>
+
+                            <!-- ID -->
+
+                            <td class="request-id">
+                                {{ req.id }}
+                            </td>
+
+
+                            <!-- Date -->
+
+                            <td>
+                                {{ req.created_at.strftime('%Y-%m-%d %H:%M') if req.created_at else 'N/A' }}
+                            </td>
+
+
+                            <!-- Gene List (truncated for display) -->
+
+                            <td class="gene-list-cell">
+
+                                {% if req.gene_list %}
+                                    {{ req.gene_list[:100] }}{% if req.gene_list|length > 100 %}...{% endif %}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Status -->
+
+                            <td>
+
+                                <span
+                                    class="status-badge
+                                    {% if req.status == 'Completed' %}
+                                        status-completed
+                                    {% elif req.status == 'Pending' %}
+                                        status-pending
+                                    {% elif req.status == 'Processing' %}
+                                        status-processing
+                                    {% else %}
+                                        status-default
+                                    {% endif %}">
+
+                                    {{ req.status }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- Result -->
+
+                            <td>
+
+                                {% if req.result_file %}
+
+                                    <a
+                                        class="download-link"
+                                        href="{{ url_for('admin.download_result', filename=req.result_file) }}">
+
+                                        <i class="fa-solid fa-download"></i>
+                                        Download
+
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="no-result">
+                                        No result yet
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            {% if is_admin %}
+
+
+                            <!-- Active -->
+
+                            <td>
+
+                                {% if req.is_active %}
+
+                                    <span class="active-badge">
+                                        ✓ Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="inactive-badge">
+                                        ✕ Inactive
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Admin Actions -->
+
+                            <td class="actions-cell">
+
+
+                                <!-- Activate / Deactivate -->
+
+                                <form
+                                    action="{{ url_for('admin.toggle_active', req_id=req.id) }}"
+                                    method="POST"
+                                    class="inline-form">
+
+                                    <button
+                                        type="submit"
+                                        class="action-button
+                                        {% if req.is_active %}
+                                            deactivate-button
+                                        {% else %}
+                                            activate-button
+                                        {% endif %}">
+
+                                        {% if req.is_active %}
+                                            Deactivate
+                                        {% else %}
+                                            Activate
+                                        {% endif %}
+
+                                    </button>
+
+                                </form>
+
+
+                                <!-- Upload Result -->
+
+                                <form
+                                    action="{{ url_for('admin.upload_result', req_id=req.id) }}"
+                                    method="POST"
+                                    enctype="multipart/form-data"
+                                    class="upload-form">
+
+                                    <input
+                                        type="file"
+                                        name="result_file"
+                                        accept=".csv,.zip,.txt,.pdf"
+                                        required>
+
+                                    <button
+                                        type="submit"
+                                        class="action-button upload-button">
+
+                                        Upload Result
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+
+                            {% endif %}
+
+                        </tr>
+
+
+                        {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="{% if is_admin %}7{% else %}5{% endif %}"
+                                class="empty-row">
+
+                                <div class="empty-message">
+
+                                    <i class="fa-solid fa-inbox"></i>
+
+                                    <p>
+                                        No target identification requests yet.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     FONT AWESOME
+     ========================================= -->
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+<!-- =========================================
+     PAGE CSS
+     ========================================= -->
+
+<style>
+
+/* =========================================
+   Submit + Professional Services
+   ========================================= */
+
+.submit-services-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 70px;
+
+    margin-top: 15px;
+
+    margin-bottom: 10px;
+
+}
+
+
+.submit-section {
+
+    width: 180px;
+
+    flex-shrink: 0;
+
+}
+
+
+.professional-services {
+
+    flex: 1;
+
+}
+
+
+.professional-services h3 {
+
+    margin: 0 0 6px 0;
+
+    font-size: 20px;
+
+    color: #0F4C97;
+
+}
+
+
+.professional-services p {
+
+    margin: 0 0 8px 0;
+
+    line-height: 1.4;
+
+}
+
+
+.contact-icons {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 25px;
+
+}
+
+
+.contact-icons a {
+
+    text-decoration: none;
+
+    color: #0F4C97;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    transition: 0.2s;
+
+}
+
+
+.contact-icons a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+.contact-icons i {
+
+    font-size: 17px;
+
+}
+
+
+/* =========================================
+   Workflow Guide
+   ========================================= */
+
+.workflow-area {
+
+    margin-top: 5px;
+
+}
+
+
+.guide {
+
+    display: none;
+
+    margin-top: 20px;
+
+    margin-bottom: 20px;
+
+    padding: 20px;
+
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+}
+
+
+.guide h2 {
+
+    margin-top: 0;
+
+}
+
+
+.guide ol {
+
+    line-height: 1.8;
+
+}
+
+
+/* =========================================
+   REQUESTS SECTION
+   ========================================= */
+
+.requests-section {
+
+    margin-top: 45px;
+
+    margin-bottom: 40px;
+
+}
+
+
+/* Requests heading */
+
+.requests-header {
+
+    text-align: center;
+
+    margin-bottom: 20px;
+
+}
+
+
+.requests-header h2 {
+
+    margin: 0;
+
+    font-size: 28px;
+
+    color: #222;
+
+    font-weight: 600;
+
+}
+
+
+.requests-header p {
+
+    margin-top: 7px;
+
+    margin-bottom: 0;
+
+    color: #666;
+
+    font-size: 15px;
+
+}
+
+
+/* =========================================
+   REQUESTS CARD
+   ========================================= */
+
+.requests-card {
+
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+}
+
+
+/* =========================================
+   TABLE
+   ========================================= */
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+.requests-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 15px;
+
+}
+
+
+/* Table Header */
+
+.requests-table thead {
+
+    background: #0F4C97;
+
+    color: white;
+
+}
+
+
+.requests-table th {
+
+    padding: 14px 12px;
+
+    text-align: center;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    border-right: 1px solid rgba(255,255,255,0.2);
+
+}
+
+
+.requests-table th:last-child {
+
+    border-right: none;
+
+}
+
+
+/* Table Body */
+
+.requests-table td {
+
+    padding: 13px 12px;
+
+    text-align: center;
+
+    border-bottom: 1px solid #e5e5e5;
+
+    vertical-align: middle;
+
+}
+
+
+.requests-table tbody tr {
+
+    background: white;
+
+    transition: background 0.2s;
+
+}
+
+
+.requests-table tbody tr:hover {
+
+    background: #f5f8fc;
+
+}
+
+
+.requests-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================
+   ID
+   ========================================= */
+
+.request-id {
+
+    font-weight: 600;
+
+    color: #0F4C97;
+
+}
+
+
+/* =========================================
+   Gene List
+   ========================================= */
+
+.gene-list-cell {
+
+    max-width: 250px;
+
+    word-break: break-word;
+
+}
+
+
+/* =========================================
+   STATUS
+   ========================================= */
+
+.status-badge {
+
+    display: inline-block;
+
+    padding: 5px 12px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* Completed */
+
+.status-completed {
+
+    background: #e7f6ec;
+
+    color: #218838;
+
+}
+
+
+/* Pending */
+
+.status-pending {
+
+    background: #fff4d6;
+
+    color: #946200;
+
+}
+
+
+/* Processing */
+
+.status-processing {
+
+    background: #e6f0ff;
+
+    color: #0F4C97;
+
+}
+
+
+/* Other */
+
+.status-default {
+
+    background: #eeeeee;
+
+    color: #555;
+
+}
+
+
+/* =========================================
+   DOWNLOAD
+   ========================================= */
+
+.download-link {
+
+    color: #0F4C97;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+}
+
+
+.download-link:hover {
+
+    text-decoration: underline;
+
+}
+
+
+.download-link i {
+
+    margin-right: 5px;
+
+}
+
+
+/* =========================================
+   NO RESULT
+   ========================================= */
+
+.no-result {
+
+    color: #888;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================
+   ACTIVE / INACTIVE
+   ========================================= */
+
+.active-badge {
+
+    color: #218838;
+
+    font-weight: 600;
+
+    font-size: 13px;
+
+}
+
+
+.inactive-badge {
+
+    color: #dc3545;
+
+    font-weight: 600;
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================
+   ADMIN ACTIONS
+   ========================================= */
+
+.actions-cell {
+
+    white-space: nowrap;
+
+}
+
+
+.inline-form {
+
+    display: inline-block;
+
+    margin-right: 5px;
+
+}
+
+
+.upload-form {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 5px;
+
+}
+
+
+.upload-form input[type="file"] {
+
+    max-width: 180px;
+
+    font-size: 12px;
+
+}
+
+
+.action-button {
+
+    border: none;
+
+    border-radius: 5px;
+
+    padding: 6px 10px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    font-weight: 500;
+
+}
+
+
+/* Activate */
+
+.activate-button {
+
+    background: #198754;
+
+    color: white;
+
+}
+
+
+/* Deactivate */
+
+.deactivate-button {
+
+    background: #dc3545;
+
+    color: white;
+
+}
+
+
+/* Upload */
+
+.upload-button {
+
+    background: #0F4C97;
+
+    color: white;
+
+}
+
+
+.action-button:hover {
+
+    opacity: 0.85;
+
+}
+
+
+/* =========================================
+   EMPTY REQUESTS
+   ========================================= */
+
+.empty-row {
+
+    padding: 35px !important;
+
+}
+
+
+.empty-message {
+
+    color: #777;
+
+    text-align: center;
+
+}
+
+
+.empty-message i {
+
+    font-size: 28px;
+
+    margin-bottom: 8px;
+
+    color: #aaa;
+
+}
+
+
+.empty-message p {
+
+    margin: 0;
+
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+@media (max-width: 800px) {
+
+    .submit-services-row {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 20px;
+
+    }
+
+
+    .submit-section {
+
+        width: auto;
+
+    }
+
+
+    .professional-services {
+
+        width: 100%;
+
+    }
+
+
+    .contact-icons {
+
+        flex-wrap: wrap;
+
+        gap: 15px;
+
+    }
+
+
+    .requests-section {
+
+        margin-top: 35px;
+
+    }
+
+
+    .requests-header h2 {
+
+        font-size: 24px;
+
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================
+     JAVASCRIPT
+     ========================================= -->
+
+<script>
+
+function toggleGuide() {
+
+    var guide = document.getElementById("guide");
+
+
+    if (
+        guide.style.display === "none" ||
+        guide.style.display === ""
+    ) {
+
+        guide.style.display = "block";
+
+    }
+
+    else {
+
+        guide.style.display = "none";
+
+    }
+
+}
+
+</script>
+
+
+{% endblock %}

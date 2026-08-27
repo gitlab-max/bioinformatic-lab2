@@ -1,0 +1,163 @@
+# ================================
+# Byte‑compiled / optimized files
+# ================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ================================
+# Virtual environments
+# ================================
+venv/
+env/
+ENV/
+.venv
+venv.bak
+env.bak
+
+# ================================
+# Database files (local SQLite)
+# ================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+instance/
+
+# ================================
+# Uploads (if you add file uploads)
+# ================================
+uploads/
+media/
+*.pdf
+*.xlsx
+*.csv
+*.xls
+
+# ================================
+# Environment variables
+# ================================
+.env
+.flaskenv
+.env.local
+.env.*.local
+
+# ================================
+# Flask / Werkzeug
+# ================================
+.webassets-cache
+.watchdog
+*.pid
+*.lock
+
+# ================================
+# Logs
+# ================================
+logs/
+*.log
+*.log.*
+
+# ================================
+# IDE / Editor files
+# ================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.bak
+
+# ================================
+# Python packaging / build
+# ================================
+*.egg-info/
+dist/
+build/
+*.egg
+MANIFEST
+
+# ================================
+# OS generated
+# ================================
+.directory
+*.tmp
+
+# ================================
+# Render specific (optional)
+# ================================
+.render/
+*_deploy_*
+
+# ================================
+# Coverage / testing
+# ================================
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.pytest_cache/
+
+# ================================
+# MyPy / type checking
+# ================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ================================
+# Docker
+# ================================
+Dockerfile
+.dockerignore
+*.dockerignore
+
+# ================================
+# Backup files
+# ================================
+*.backup
+*.orig
+*.save
+
+# ================================
+# VS Code settings
+# ================================
+.vscode/
+.vscode-test/
+*.code-workspace
+
+# ================================
+# Sublime Text
+# ================================
+*.sublime-project
+*.sublime-workspace
+
+# ================================
+# Jupyter Notebooks (if used)
+# ================================
+*.ipynb
+*.ipynb_checkpoints/
+
+# ================================
+# PyCharm
+# ================================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ================================
+# AWS / Terraform
+# ================================
+.terraform/
+terraform.tfstate
+*.tfstate.*

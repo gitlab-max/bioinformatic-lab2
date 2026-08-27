@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Bioinformatics Workflow{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <!-- =========================================
+         REGISTER BOX – Full width at top
+         ========================================= -->
+    <div class="register-banner">
+        <div class="register-content">
+            <div>
+                <h3>🧪 Daily Bioinformatics Workshop</h3>
+                <p>
+                    Join our free daily workshop – learn RNA‑seq analysis, drug discovery, and AI in genomics.
+                    <br><strong>📅 Every weekday at 10:00 AM (UTC)</strong>
+                </p>
+            </div>
+            <a href="{{ url_for('main.register_workshop') }}" class="btn btn-success register-btn">
+                Register Now
+            </a>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- =========================================
+         TWO-COLUMN LAYOUT: Modules + News
+         ========================================= -->
+    <div class="row">
+
+        <!-- ============================
+             LEFT COLUMN (Modules)
+             ============================ -->
+        <div class="col-lg-8">
+
+            <!-- GEO Prioritization -->
+            <div class="card module-card">
+                <p>Identify and rank GEO datasets for your disease of interest.</p>
+                <a href="{{ url_for('main.geo') }}">
+                    <button class="btn btn-primary module-btn">GEO Prioritization</button>
+                </a>
+            </div>
+
+            <!-- Transcriptomics Analysis -->
+            <div class="card module-card">
+                <p>Comprehensive RNA-seq and microarray analysis for differential expression and visualization.</p>
+                <a href="{{ url_for('main.transcriptomics') }}">
+                    <button class="btn btn-primary module-btn">Transcriptomics Analysis</button>
+                </a>
+            </div>
+
+            <!-- Functional Enrichment -->
+            <div class="card module-card">
+                <p>Transform gene lists into biological pathways and disease mechanisms.</p>
+                <a href="{{ url_for('main.enrichment') }}">
+                    <button class="btn btn-primary module-btn">Functional Enrichment</button>
+                </a>
+            </div>
+
+            <!-- Target Identification -->
+            <div class="card module-card">
+                <p>Prioritize candidate biomarkers and therapeutic targets using network biology.</p>
+                <a href="{{ url_for('main.targets') }}">
+                    <button class="btn btn-primary module-btn">Target Identification</button>
+                </a>
+            </div>
+
+            <!-- Drug Discovery -->
+            <div class="card module-card">
+                <p>Integrate bioinformatics, network biology, and AI to prioritize therapeutic compounds.</p>
+                <a href="{{ url_for('main.drug') }}">
+                    <button class="btn btn-primary module-btn">Drug Discovery</button>
+                </a>
+            </div>
+
+            <!-- Dashboard button (only for logged-in users) -->
+            {% if current_user.is_authenticated %}
+            <div style="text-align: center; margin: 30px 0 10px 0;">
+                <a href="{{ url_for('main.user_dashboard') }}" class="btn btn-secondary dashboard-btn">
+                    📊 Go to Dashboard
+                </a>
+            </div>
+            {% endif %}
+
+        </div> <!-- /col-lg-8 -->
+
+
+        <!-- ============================
+             RIGHT COLUMN (News only)
+             ============================ -->
+        <div class="col-lg-4">
+
+            <!-- NEWS / ARTICLES -->
+            <div class="sidebar-card news-box">
+                <h3>📰 Latest News & Articles</h3>
+                <ul class="news-list">
+                    <li>
+                        <a href="#">New AI model predicts protein structures with 95% accuracy</a>
+                        <span class="news-date">Aug 25, 2026</span>
+                    </li>
+                    <li>
+                        <a href="#">GEO dataset prioritization pipeline now supports single‑cell data</a>
+                        <span class="news-date">Aug 22, 2026</span>
+                    </li>
+                    <li>
+                        <a href="#">Webinar: Drug repurposing using network biology – register now</a>
+                        <span class="news-date">Aug 20, 2026</span>
+                    </li>
+                    <li>
+                        <a href="#">Our transcriptomics module now includes interactive volcano plots</a>
+                        <span class="news-date">Aug 18, 2026</span>
+                    </li>
+                </ul>
+                <a href="#" class="btn btn-outline-primary btn-sm view-all-btn">View All News →</a>
+            </div>
+
+        </div> <!-- /col-lg-4 -->
+
+    </div> <!-- /row -->
+</div> <!-- /container -->
+
+
+<!-- =========================================
+     ADDITIONAL STYLES
+     ========================================= -->
+<style>
+/* Register Banner (full width at top) */
+.register-banner {
+    background: linear-gradient(135deg, #f0f7ff 0%, #d9e8f7 100%);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    border-left: 6px solid #0F4C97;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.register-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.register-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 22px;
+    color: #0F4C97;
+}
+.register-content p {
+    margin: 0;
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+}
+.register-content p strong {
+    color: #0F4C97;
+}
+.register-btn {
+    padding: 10px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+/* Module cards */
+.module-card {
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.module-card p {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Module buttons – smaller, left-aligned */
+.module-btn {
+    display: inline-block;
+    width: auto;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    background: #0F4C97;
+    color: white;
+    border: none;
+    transition: 0.2s;
+}
+.module-btn:hover {
+    transform: scale(1.02);
+    opacity: 0.9;
+}
+
+/* Dashboard button */
+.dashboard-btn {
+    padding: 10px 30px;
+    font-size: 16px;
+    border-radius: 6px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+}
+.dashboard-btn:hover {
+    background: #5a6268;
+    color: white;
+}
+
+/* Sidebar cards (only news now) */
+.sidebar-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.sidebar-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #0F4C97;
+}
+
+/* News box */
+.news-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.news-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.news-list li:last-child {
+    border-bottom: none;
+}
+.news-list a {
+    display: block;
+    color: #0F4C97;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.news-list a:hover {
+    color: #ff6600;
+    text-decoration: underline;
+}
+.news-date {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-top: 3px;
+}
+.view-all-btn {
+    margin-top: 12px;
+    display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .col-lg-8, .col-lg-4 {
+        width: 100%;
+    }
+    .register-content {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    .register-btn {
+        align-self: center;
+    }
+}
+</style>
+
+{% endblock %}
