@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}{{ news.title }}{% endblock %}
+
+{% block content %}
+
+<div class="container news-detail">
+
+    <div class="news-header">
+
+        <h1>{{ news.title }}</h1>
+
+        <p class="news-date">
+            <i class="far fa-calendar-alt"></i> {{ news.date }}
+        </p>
+
+    </div>
+
+    <div class="news-content">
+
+        <p>{{ news.content }}</p>
+
+    </div>
+
+    <div class="news-actions">
+
+        <a href="{{ url_for('main.index') }}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+
+    </div>
+
+</div>
+
+<style>
+
+.news-detail {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+}
+
+.news-header {
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 25px;
+}
+
+.news-header h1 {
+    font-size: 32px;
+    color: #0F4C97;
+    margin: 0 0 12px 0;
+}
+
+.news-date {
+    color: #888;
+    font-size: 15px;
+    margin: 0;
+}
+
+.news-date i {
+    margin-right: 6px;
+}
+
+.news-content {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.news-content p {
+    margin: 0 0 20px 0;
+}
+
+.news-actions {
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: #e9eef5;
+    color: #0F4C97;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #dce5f0;
+}
+
+@media (max-width: 600px) {
+    .news-detail {
+        padding: 20px;
+        margin: 20px 15px;
+    }
+    .news-header h1 {
+        font-size: 24px;
+    }
+    .news-content {
+        font-size: 16px;
+    }
+}
+
+</style>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+{% endblock %}

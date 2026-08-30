@@ -12,7 +12,7 @@
     <div class="register-banner">
         <div class="register-content">
             <div>
-                <h3>🧪 Daily Bioinformatics Workshop</h3>
+                <h3>🧪Bioinformatic Workshop</h3>
                 <p>
                     Join our free daily workshop – learn RNA‑seq analysis, drug discovery, and AI in genomics.
                     <br><strong>📅 Every weekday at 10:00 AM (UTC)</strong>
@@ -97,22 +97,29 @@
             <div class="sidebar-card news-box">
                 <h3>📰 Latest News & Articles</h3>
                 <ul class="news-list">
-                    <li>
-                        <a href="#">New AI model predicts protein structures with 95% accuracy</a>
-                        <span class="news-date">Aug 25, 2026</span>
-                    </li>
-                    <li>
-                        <a href="#">GEO dataset prioritization pipeline now supports single‑cell data</a>
-                        <span class="news-date">Aug 22, 2026</span>
-                    </li>
-                    <li>
-                        <a href="#">Webinar: Drug repurposing using network biology – register now</a>
-                        <span class="news-date">Aug 20, 2026</span>
-                    </li>
-                    <li>
-                        <a href="#">Our transcriptomics module now includes interactive volcano plots</a>
-                        <span class="news-date">Aug 18, 2026</span>
-                    </li>
+                    
+            {% if news_articles %}
+
+                {% for article in news_articles %}
+
+                <li>
+                    <a href="{{ url_for('main.news_detail', news_id=article.id) }}">
+                        {{ article.title }}
+                    </a>
+                    <span class="news-date">
+                        {{ article.published_at.strftime('%b %d, %Y') }}
+                    </span>
+                </li>
+
+                {% endfor %}
+
+            {% else %}
+
+                <li class="no-news">
+                    No news articles yet. Stay tuned!
+                </li>
+
+            {% endif %}
                 </ul>
                 <a href="#" class="btn btn-outline-primary btn-sm view-all-btn">View All News →</a>
             </div>

@@ -16,22 +16,6 @@ Login | Bioinformatic Lab
             Login to your Bioinformatic Lab account
         </p>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-
-            {% if messages %}
-
-                {% for category, message in messages %}
-
-                    <div class="alert {{ category }}">
-                        {{ message }}
-                    </div>
-
-                {% endfor %}
-
-            {% endif %}
-
-        {% endwith %}
-
 
         <form method="POST"
               action="{{ url_for('auth.login') }}">

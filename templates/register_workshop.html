@@ -4,44 +4,227 @@
 
 {% block content %}
 
-<div class="container" style="max-width: 700px; margin: 40px auto;">
+<div class="container">
 
-    <h1>🧪 Daily Bioinformatics Workshop</h1>
-    <p class="text-muted">Join our free daily workshop to learn bioinformatics, RNA-seq, and AI in drug discovery.</p>
+    <div class="registration-header">
 
-    <hr>
+        <h1><i class="fas fa-chalkboard-teacher"></i> Register for a Workshop</h1>
 
-    <form method="POST" action="{{ url_for('main.register_workshop') }}">
-        <!-- Name -->
-        <div class="form-group mb-3">
-            <label for="name">Full Name</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Your full name" required>
-        </div>
+        <p>Select a workshop and fill in your details to register.</p>
 
-        <!-- Email -->
-        <div class="form-group mb-3">
-            <label for="email">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
-        </div>
+    </div>
 
-        <!-- Workshop Date (optional) -->
-        <div class="form-group mb-3">
-            <label for="date">Preferred Date</label>
-            <select class="form-control" id="date" name="date">
-                <option value="today">Today (10:00 AM UTC)</option>
-                <option value="tomorrow">Tomorrow (10:00 AM UTC)</option>
-                <option value="next_week">Next Week (10:00 AM UTC)</option>
-            </select>
-        </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-        <!-- Submit -->
-        <button type="submit" class="btn btn-success btn-lg">Register Now</button>
-    </form>
+    <div class="registration-card">
 
-    <div class="mt-4">
-        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Home</a>
+        <form method="POST" action="{{ url_for('main.register_workshop') }}">
+
+            <div class="form-group">
+
+                <label for="workshop_id">Select Workshop <span class="required">*</span></label>
+
+                <select id="workshop_id" name="workshop_id" class="form-control" required>
+
+                    <option value="">-- Select a workshop --</option>
+
+                    {% for workshop in workshops %}
+
+                        <option value="{{ workshop.id }}">
+                            {{ workshop.title }} – {{ workshop.date.strftime('%b %d, %Y %H:%M') }}
+                            ({{ workshop.registered_count }}/{{ workshop.capacity }})
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="name">Full Name <span class="required">*</span></label>
+
+                <input type="text" id="name" name="name" class="form-control" required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="email">Email Address <span class="required">*</span></label>
+
+                <input type="email" id="email" name="email" class="form-control" required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="affiliation">Affiliation (optional)</label>
+
+                <input type="text" id="affiliation" name="affiliation" class="form-control" placeholder="University, Company, etc.">
+
+            </div>
+
+            <div class="form-actions">
+
+                <a href="{{ url_for('main.index') }}" class="btn-secondary">Cancel</a>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-check"></i> Register
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
 
 </div>
+
+<style>
+
+.container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.registration-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.registration-header h1 {
+    color: #0F4C97;
+    font-size: 32px;
+    margin: 0 0 10px 0;
+}
+
+.registration-header h1 i {
+    margin-right: 10px;
+}
+
+.registration-header p {
+    color: #666;
+    font-size: 18px;
+    margin: 0;
+}
+
+.registration-card {
+    background: white;
+    padding: 35px 40px;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.required {
+    color: #dc3545;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #0F4C97;
+    box-shadow: 0 0 0 3px rgba(15, 76, 151, 0.10);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn-primary, .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: #0F4C97;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0b3973;
+}
+
+.btn-secondary {
+    background: #e9eef5;
+    color: #0F4C97;
+}
+
+.btn-secondary:hover {
+    background: #dce5f0;
+}
+
+.alert {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+.alert.success {
+    background: #dff3e4;
+    color: #216e39;
+}
+
+.alert.danger {
+    background: #fde2e2;
+    color: #a61b1b;
+}
+
+@media (max-width: 600px) {
+    .registration-card {
+        padding: 20px;
+    }
+    .form-actions {
+        flex-direction: column;
+    }
+    .form-actions .btn-primary,
+    .form-actions .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 {% endblock %}

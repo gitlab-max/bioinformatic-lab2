@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}My Notifications{% endblock %}
+
+{% block content %}
+
+<div class="container notifications-page">
+
+    <h1><i class="fas fa-bell"></i> My Notifications</h1>
+
+    {% if notifications %}
+
+        <div class="notifications-list">
+
+            {% for notif in notifications %}
+
+            <div class="notification-item {% if not notif.read %}unread{% endif %}">
+
+                <div class="notification-header">
+
+                    <h3>{{ notif.title }}</h3>
+
+                    <span class="notification-date">
+                        {{ notif.created_at.strftime('%b %d, %Y %H:%M') }}
+                    </span>
+
+                </div>
+
+                <div class="notification-body">
+
+                    <p>{{ notif.message }}</p>
+
+                </div>
+
+                {% if not notif.read %}
+
+                    <div class="notification-status">
+                        <span class="badge-unread">● New</span>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <form method="POST" action="{{ url_for('main.mark_notifications_read') }}">
+            <button type="submit" class="btn-primary">Mark All as Read</button>
+        </form>
+
+    {% else %}
+
+        <div class="empty-state">
+            <i class="fas fa-bell-slash"></i>
+            <h3>No Notifications</h3>
+            <p>You don't have any notifications yet.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+<style>
+
+.notifications-page {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.notifications-page h1 {
+    color: #0F4C97;
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.notifications-page h1 i {
+    margin-right: 10px;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.notification-item {
+    background: white;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-left: 4px solid #e9eef5;
+    transition: 0.2s;
+}
+
+.notification-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+}
+
+.notification-item.unread {
+    border-left-color: #0F4C97;
+    background: #f8faff;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #222;
+}
+
+.notification-date {
+    font-size: 13px;
+    color: #999;
+}
+
+.notification-body p {
+    margin: 0;
+    color: #555;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.badge-unread {
+    display: inline-block;
+    font-size: 12px;
+    color: #0F4C97;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.empty-state i {
+    font-size: 48px;
+    color: #ddd;
+    margin-bottom: 15px;
+}
+
+.empty-state h3 {
+    margin: 0 0 8px 0;
+    color: #444;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #999;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: #0F4C97;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background: #0b3973;
+}
+
+@media (max-width: 600px) {
+    .notification-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .notification-item {
+        padding: 16px 18px;
+    }
+}
+
+</style>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+{% endblock %}
