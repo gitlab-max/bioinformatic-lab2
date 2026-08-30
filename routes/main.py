@@ -3,16 +3,17 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from extensions import db
-from models import Request
+from models import Request,News,Notification,Workshop,WorkshopRegistration
 from utils.email import send_request_email, send_confirmation_email
-from models import WorkshopRegistration   # add to imports
 from utils.email import send_workshop_confirmation   # or email_sender
 
 main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
-    return render_template("index.html")
+    # Fetch published news articles from database (most recent first)
+    news_articles = News.query.filter_by(is_published=True).order_by(News.published_at.desc()).limit(6).all()
+    return render_template("index.html", news_articles=news_articles)
 
 # ------------------ GEO ------------------
 @main.route("/geo", methods=["GET", "POST"])
@@ -66,11 +67,12 @@ def transcriptomics():
         flash("Your transcriptomics request has been submitted.", "success")
         return redirect(url_for("main.transcriptomics"))
 
-    user_requests = Request.query.filter_by(
-        user_id=current_user.id,
-        module_type="transcriptomics"
-    ).order_by(Request.created_at.desc()).all()
-    return render_template("transcriptomics.html", requests=user_requests)
+    # GET: show all (active for users, all for admin)
+    if current_user.role == 'admin':
+           requests = Request.query.filter_by(module_type='trancriptomics').order_by(Request.created_at.desc()).all()
+    else:
+           requests = Request.query.filter_by(module_type='transcriptomics', is_active=True).order_by(Request.created_at.desc()).all()
+    return render_template("transcriptomics.html", requests=requests, is_admin=(current_user.role == 'admin'))
 
 # ------------------ Enrichment ------------------
 @main.route("/enrichment", methods=["GET", "POST"])
@@ -94,11 +96,12 @@ def enrichment():
         flash("Your enrichment request has been submitted.", "success")
         return redirect(url_for("main.enrichment"))
 
-    user_requests = Request.query.filter_by(
-        user_id=current_user.id,
-        module_type="enrichment"
-    ).order_by(Request.created_at.desc()).all()
-    return render_template("enrichment.html", requests=user_requests)
+     # GET: show all (active for users, all for admin)
+    if current_user.role == 'admin':
+            requests = Request.query.filter_by(module_type='enrichment').order_by(Request.created_at.desc()).all()
+    else:
+            requests = Request.query.filter_by(module_type='enrichment', is_active=True).order_by(Request.created_at.desc()).all()
+    return render_template("enrichment.html", requests=requests, is_admin=(current_user.role == 'admin'))
 
 # ------------------ Targets ------------------
 @main.route("/targets", methods=["GET", "POST"])
@@ -122,11 +125,12 @@ def targets():
         flash("Your target identification request has been submitted.", "success")
         return redirect(url_for("main.targets"))
 
-    user_requests = Request.query.filter_by(
-        user_id=current_user.id,
-        module_type="targets"
-    ).order_by(Request.created_at.desc()).all()
-    return render_template("targets.html", requests=user_requests)
+     # GET: show all (active for users, all for admin)
+    if current_user.role == 'admin':
+            requests = Request.query.filter_by(module_type='targets').order_by(Request.created_at.desc()).all()
+    else:
+            requests = Request.query.filter_by(module_type='targets', is_active=True).order_by(Request.created_at.desc()).all()
+    return render_template("targets.html", requests=requests, is_admin=(current_user.role == 'admin'))
 
 # ------------------ Drug Discovery ------------------
 @main.route("/drug", methods=["GET", "POST"])
@@ -150,11 +154,12 @@ def drug():
         flash("Your drug discovery request has been submitted.", "success")
         return redirect(url_for("main.drug"))
 
-    user_requests = Request.query.filter_by(
-        user_id=current_user.id,
-        module_type="drug"
-    ).order_by(Request.created_at.desc()).all()
-    return render_template("drug.html", requests=user_requests)
+     # GET: show all (active for users, all for admin)
+    if current_user.role == 'admin':
+            requests = Request.query.filter_by(module_type='drug').order_by(Request.created_at.desc()).all()
+    else:
+            requests = Request.query.filter_by(module_type='drug', is_active=True).order_by(Request.created_at.desc()).all()
+    return render_template("drug.html", requests=requests, is_admin=(current_user.role == 'admin'))
 
 # ------------------ User Dashboard ------------------
 @main.route("/dashboard")
@@ -166,23 +171,53 @@ def user_dashboard():
 
 @main.route('/register-workshop', methods=['GET', 'POST'])
 def register_workshop():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        date_pref = request.form.get('date')
+    workshops = Workshop.query.filter_by(is_active=True).order_by(Workshop.date.asc()).all()
 
-        # Save to database
-        new_reg = WorkshopRegistration(
+    if request.method == 'POST':
+        workshop_id = request.form.get('workshop_id', '').strip()
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        affiliation = request.form.get('affiliation', '').strip()
+
+        if not workshop_id:
+            flash('Please select a workshop.', 'danger')
+            return render_template('register_workshop.html', workshops=workshops)
+
+        if not name or not email:
+            flash('Name and email are required.', 'danger')
+            return render_template('register_workshop.html', workshops=workshops)
+
+        workshop = Workshop.query.get_or_404(int(workshop_id))
+
+        # Check capacity
+        if workshop.registered_count >= workshop.capacity:
+            flash('This workshop is full. Please select another.', 'danger')
+            return render_template('register_workshop.html', workshops=workshops)
+
+        # Save registration
+        reg = WorkshopRegistration(
+            workshop_id=workshop.id,
             name=name,
             email=email,
-            date_preference=date_pref
+            affiliation=affiliation,
+            status='Pending'
         )
-        db.session.add(new_reg)
+        db.session.add(reg)
+        workshop.registered_count += 1
         db.session.commit()
 
-        # Send confirmation email
-        send_workshop_confirmation(name, email)
-
-        flash(f'Registration successful for {name}! Check your email for confirmation.', 'success')
+        flash(f'Registration successful for "{workshop.title}"!', 'success')
         return redirect(url_for('main.index'))
-    return render_template('register_workshop.html')
+
+    return render_template('register_workshop.html', workshops=workshops)
+
+@main.route('/news/<int:news_id>')
+def news_detail(news_id):
+    news = News.query.get_or_404(news_id)
+    return render_template('news_detail.html', news=news)
+
+@main.route("/notifications")
+@login_required
+def notifications():
+    user_notifications = Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).all()
+    return render_template("user/notifications.html", notifications=user_notifications)
