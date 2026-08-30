@@ -136,7 +136,6 @@ def workshop_list():
     workshops = Workshop.query.order_by(Workshop.date.desc()).all()
     return render_template('admin/workshop_list.html', workshops=workshops)
 
-
 @admin.route('/workshops/add', methods=['GET', 'POST'])
 @admin_required
 def workshop_add():
@@ -147,8 +146,10 @@ def workshop_add():
         duration = request.form.get('duration', '2 hours').strip()
         capacity = request.form.get('capacity', 20)
         is_active = request.form.get('is_active') == 'on'
-        image_url = request.form.get('image_url', '').strip()
+        image_url = request.form.get('image_url', '').strip() or None
+        meet_link = request.form.get('meet_link', '').strip() or None
 
+        # Validation
         if not title or not description or not date_str:
             flash('Title, description, and date are required.', 'danger')
             return render_template('admin/workshop_add.html')
@@ -159,6 +160,7 @@ def workshop_add():
             flash('Invalid date format.', 'danger')
             return render_template('admin/workshop_add.html')
 
+        # CREATE THE WORKSHOP OBJECT HERE
         workshop = Workshop(
             title=title,
             description=description,
@@ -166,16 +168,16 @@ def workshop_add():
             duration=duration,
             capacity=int(capacity) if capacity else 20,
             is_active=is_active,
-            image_url=image_url or None
+            image_url=image_url,
+            meet_link=meet_link      # <-- set directly in constructor
         )
+
         db.session.add(workshop)
         db.session.commit()
         flash('Workshop created successfully.', 'success')
         return redirect(url_for('admin.workshop_list'))
 
     return render_template('admin/workshop_add.html')
-
-
 @admin.route('/workshops/<int:workshop_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def workshop_edit(workshop_id):
@@ -189,6 +191,7 @@ def workshop_edit(workshop_id):
         workshop.capacity = int(request.form.get('capacity', 20))
         workshop.is_active = request.form.get('is_active') == 'on'
         workshop.image_url = request.form.get('image_url', '').strip() or None
+        workshop.meet_link = request.form.get('meet_link', '').strip() or None
 
         if not workshop.title or not workshop.description or not date_str:
             flash('Title, description, and date are required.', 'danger')
@@ -204,10 +207,9 @@ def workshop_edit(workshop_id):
         flash('Workshop updated successfully.', 'success')
         return redirect(url_for('admin.workshop_list'))
 
-    # Format date for the input field
+    # For GET, format the date
     date_str = workshop.date.strftime('%Y-%m-%dT%H:%M') if workshop.date else ''
     return render_template('admin/workshop_edit.html', workshop=workshop, date_str=date_str)
-
 
 @admin.route('/workshops/<int:workshop_id>/delete', methods=['POST'])
 @admin_required
