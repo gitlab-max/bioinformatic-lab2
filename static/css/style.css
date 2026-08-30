@@ -557,23 +557,24 @@ body {
    ========================= */
 
 .flash-container {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(90%, 1100px);
-    z-index: 9999;
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px auto;
 }
 
 .flash-message {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     padding: 12px 18px;
     margin-bottom: 10px;
+
     border-radius: 6px;
+
     font-size: 14px;
     font-weight: 500;
+
     box-sizing: border-box;
 }
 
@@ -609,10 +610,13 @@ body {
 .flash-close {
     border: none;
     background: transparent;
+
     font-size: 22px;
     line-height: 1;
+
     color: inherit;
     cursor: pointer;
+
     padding: 0 0 0 15px;
 }
 
