@@ -552,3 +552,70 @@ body {
         justify-content: center;
     }
 }
+/* =========================
+   Flash Messages
+   ========================= */
+
+.flash-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90%, 1100px);
+    z-index: 9999;
+}
+
+.flash-message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    box-sizing: border-box;
+}
+
+/* Red error message */
+.flash-message.danger,
+.flash-message.error {
+    color: #b42318;
+    background-color: #fef3f2;
+    border: 1px solid #fecdca;
+}
+
+/* Green success message */
+.flash-message.success {
+    color: #027a48;
+    background-color: #ecfdf3;
+    border: 1px solid #abefc6;
+}
+
+/* Yellow warning */
+.flash-message.warning {
+    color: #b54708;
+    background-color: #fffaeb;
+    border: 1px solid #fedf89;
+}
+
+/* Blue information */
+.flash-message.info {
+    color: #175cd3;
+    background-color: #eff8ff;
+    border: 1px solid #b2ddff;
+}
+
+.flash-close {
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    line-height: 1;
+    color: inherit;
+    cursor: pointer;
+    padding: 0 0 0 15px;
+}
+
+.flash-close:hover {
+    opacity: 0.7;
+}
