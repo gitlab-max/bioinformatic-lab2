@@ -4,6 +4,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import Config
+from flask_mail import Message
+from extensions import mail
+from flask import current_app, url_for
 
 # Get email credentials from the Config class
 EMAIL_USER = Config.MAIL_USERNAME
@@ -109,3 +112,27 @@ Bioinformatics Lab Team
     except Exception as e:
         print(f"Failed to send workshop email: {e}")
         return False
+def send_workshop_confirmation_email(registration, workshop):
+    """Send a confirmation email to a workshop registrant."""
+    subject = f"Workshop Confirmation: {workshop.title}"
+
+    body = f"""
+Dear {registration.name},
+
+Thank you for registering for the workshop "{workshop.title}".
+
+📅 Date: {workshop.date.strftime('%A, %B %d, %Y at %H:%M %Z')}
+⏰ Duration: {workshop.duration}
+
+🔗 Join the workshop here:
+{workshop.meet_link or 'The link will be sent separately.'}
+
+If you have any questions, please reply to this email.
+
+Best regards,
+Bioinformatic Lab Team
+"""
+
+    msg = Message(subject=subject, recipients=[registration.email])
+    msg.body = body
+    mail.send(msg)
